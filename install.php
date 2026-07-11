@@ -9,7 +9,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $ai_token = trim($_POST['ai_token']);
     if (!empty($api_key) && !empty($ai_token)) {
         $config_content = "<?php\n";
-        $config_content .= "// File konfigurasi terbuat otomatis saat instalasi\n";
         $config_content .= "define('API_KEY_SYSTEM', '" . addslashes($api_key) . "');\n";
         $config_content .= "define('AI_TOKENS', '" . addslashes($ai_token) . "');\n";
         $config_content .= "define('API_GATEWAY_URL', 'https://village.elyng.com/api/ai.php');\n";
