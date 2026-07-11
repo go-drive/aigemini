@@ -114,7 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="form-group">
                 <label>API Key Sistem</label>
                 <input type="text" name="api_key" placeholder="Contoh: USER_API_KEY_123" required autocomplete="off">
-                <span class="note">Kunci akses yang diberikan oleh administrator.</span>
+                <span class="note">Dapatkan API Key di dasbor Village Payment: <strong>Profil</strong> &rarr; <strong>Pengaturan API</strong>.</span>
             </div>
             <div class="form-group">
                 <label>Token AI (Mandiri)</label>
