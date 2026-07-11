@@ -30,19 +30,36 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Instalasi AI Gemini</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🤖%3C/text%3E%3C/svg%3E">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-dark: #0f172a;
+            --bg-color: #0f172a;
             --card-bg: rgba(30, 41, 59, 0.8);
-            --border: rgba(255, 255, 255, 0.1);
+            --border-color: rgba(255, 255, 255, 0.1);
             --accent: #38bdf8;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
+            --input-bg: rgba(15, 23, 42, 0.6);
+            --btn-text: #0f172a;
+            --bg-gradient: radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.1) 0px, transparent 50%);
         }
+
+        body.light-mode {
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --border-color: rgba(0,0,0,0.1);
+            --accent: #0284c7;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --input-bg: #f8fafc;
+            --btn-text: #ffffff;
+            --bg-gradient: radial-gradient(at 0% 0%, rgba(2, 132, 199, 0.05) 0px, transparent 50%);
+        }
+
         body { 
-            background-color: var(--bg-dark); 
-            background-image: radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.1) 0px, transparent 50%);
+            background-color: var(--bg-color); 
+            background-image: var(--bg-gradient);
             color: var(--text-main); 
             font-family: 'Plus Jakarta Sans', sans-serif; 
             display: flex; 
@@ -50,46 +67,74 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             align-items: center; 
             height: 100vh; 
             margin: 0; 
+            transition: background-color 0.4s ease, color 0.4s ease;
+            position: relative;
         }
+
+        .theme-wrapper {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        .btn-theme {
+            background: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-theme:hover { background: var(--border-color); }
+
         .card { 
             background: var(--card-bg); 
             padding: 35px 30px; 
             border-radius: 16px; 
-            border: 1px solid var(--border); 
+            border: 1px solid var(--border-color); 
             width: 100%; 
             max-width: 400px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15); 
             backdrop-filter: blur(10px);
+            transition: background-color 0.4s ease, border-color 0.4s ease;
         }
-        h2 { margin-top: 0; color: var(--accent); text-align: center; margin-bottom: 25px; }
+        h2 { margin-top: 0; color: var(--accent); text-align: center; margin-bottom: 25px; transition: color 0.4s ease; }
         .form-group { margin-bottom: 20px; }
-        label { display: block; font-size: 13px; margin-bottom: 8px; color: var(--text-muted); font-weight: 600;}
+        label { display: block; font-size: 13px; margin-bottom: 8px; color: var(--text-muted); font-weight: 600; transition: color 0.4s ease; }
+        
         input[type="text"] { 
             width: 100%; 
             padding: 12px 15px; 
-            background: rgba(15, 23, 42, 0.6); 
-            border: 1px solid #334155; 
+            background: var(--input-bg); 
+            border: 1px solid var(--border-color); 
             border-radius: 8px; 
-            color: #fff; 
+            color: var(--text-main); 
             box-sizing: border-box; 
             font-family: inherit;
-            transition: 0.3s;
+            transition: all 0.3s ease;
         }
-        input[type="text"]:focus { outline: none; border-color: var(--accent); }
+        input[type="text"]:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2); }
+        
         .btn { 
             width: 100%; 
             padding: 14px; 
             background: var(--accent); 
-            color: var(--bg-dark); 
+            color: var(--btn-text); 
             border: none; 
             border-radius: 8px; 
             font-weight: 700; 
             font-size: 14px;
             cursor: pointer; 
-            transition: 0.3s; 
+            transition: all 0.3s ease; 
             font-family: inherit;
         }
-        .btn:hover { background: #0284c7; color: #fff; }
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        
         .alert { 
             background: rgba(239, 68, 68, 0.1); 
             color: #ef4444;
@@ -100,10 +145,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             margin-bottom: 20px; 
             text-align: center; 
         }
-        .note { font-size: 11px; color: var(--text-muted); margin-top: 6px; display: block; }
+        .note { font-size: 11px; color: var(--text-muted); margin-top: 6px; display: block; transition: color 0.4s ease; }
     </style>
 </head>
 <body>
+    <div class="theme-wrapper">
+        <button id="themeToggle" class="btn-theme" onclick="toggleTheme()">☀️ Light Mode</button>
+    </div>
+
     <div class="card">
         <h2>Setup AI Gemini</h2>
         <?php if($pesan): ?>
@@ -123,5 +172,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <button type="submit" class="btn">Simpan & Mulai</button>
         </form>
     </div>
+
+    <script>
+        const themeToggle = document.getElementById('themeToggle');
+        let isLightMode = localStorage.getItem('ai_theme') === 'light';
+
+        function applyTheme() {
+            if (isLightMode) {
+                document.body.classList.add('light-mode');
+                themeToggle.innerHTML = '🌙 Dark Mode';
+            } else {
+                document.body.classList.remove('light-mode');
+                themeToggle.innerHTML = '☀️ Light Mode';
+            }
+        }
+
+        function toggleTheme() {
+            isLightMode = !isLightMode;
+            localStorage.setItem('ai_theme', isLightMode ? 'light' : 'dark');
+            applyTheme();
+        }
+        
+        applyTheme();
+    </script>
 </body>
 </html>
