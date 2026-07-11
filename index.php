@@ -10,17 +10,34 @@ if (!file_exists('config.php')) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Chat Assistant</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🤖%3C/text%3E%3C/svg%3E">
+    <link href="[https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&display=swap](https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&display=swap)" rel="stylesheet">
     <style>
         :root {
-            --bg-dark: #0f172a;
+            --bg-color: #0f172a;
             --card-bg: rgba(30, 41, 59, 0.8);
             --accent: #38bdf8;
             --text-main: #f8fafc;
+            --border-color: rgba(255,255,255,0.1);
+            --ai-msg-bg: rgba(255,255,255,0.05);
+            --btn-text: #0f172a;
+            --bg-gradient: radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.1) 0px, transparent 50%);
         }
+
+        body.light-mode {
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --accent: #0284c7;
+            --text-main: #0f172a;
+            --border-color: rgba(0,0,0,0.1);
+            --ai-msg-bg: #f8fafc;
+            --btn-text: #ffffff;
+            --bg-gradient: radial-gradient(at 0% 0%, rgba(2, 132, 199, 0.05) 0px, transparent 50%);
+        }
+
         body { 
-            background-color: var(--bg-dark); 
-            background-image: radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.1) 0px, transparent 50%);
+            background-color: var(--bg-color); 
+            background-image: var(--bg-gradient);
             color: var(--text-main); 
             font-family: 'Plus Jakarta Sans', sans-serif; 
             margin: 0; 
@@ -29,13 +46,45 @@ if (!file_exists('config.php')) {
             flex-direction: column; 
             height: 100vh; 
             box-sizing: border-box;
+            transition: background-color 0.4s ease, color 0.4s ease;
         }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(128, 128, 128, 0.3);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(128, 128, 128, 0.5);
+        }
+
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .header h2 { margin: 0; font-size: 20px; color: var(--accent); }
+        .header h2 { margin: 0; font-size: 20px; color: var(--accent); transition: color 0.4s ease; }
+        
+        .btn-theme {
+            background: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-theme:hover { background: var(--border-color); }
+
         .chat-container { 
             flex-grow: 1; 
             background: var(--card-bg); 
-            border: 1px solid rgba(255,255,255,0.1); 
+            border: 1px solid var(--border-color); 
             border-radius: 12px; 
             padding: 20px; 
             overflow-y: auto; 
@@ -44,27 +93,28 @@ if (!file_exists('config.php')) {
             gap: 15px; 
             margin-bottom: 20px; 
             backdrop-filter: blur(10px);
+            transition: background-color 0.4s ease, border-color 0.4s ease;
         }
-        .message { padding: 14px 18px; border-radius: 14px; max-width: 80%; line-height: 1.6; font-size: 14px; white-space: pre-wrap; }
-        .message.user { background: var(--accent); color: var(--bg-dark); align-self: flex-end; border-bottom-right-radius: 4px; font-weight: 500; }
-        .message.ai { background: rgba(255,255,255,0.05); align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid rgba(255,255,255,0.1); }
+        .message { padding: 14px 18px; border-radius: 14px; max-width: 80%; line-height: 1.6; font-size: 14px; white-space: pre-wrap; transition: all 0.3s ease; }
+        .message.user { background: var(--accent); color: var(--btn-text); align-self: flex-end; border-bottom-right-radius: 4px; font-weight: 500; }
+        .message.ai { background: var(--ai-msg-bg); align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid var(--border-color); }
         .input-area { display: flex; gap: 12px; }
         input[type="text"] { 
             flex-grow: 1; 
             padding: 16px; 
             background: var(--card-bg); 
-            border: 1px solid rgba(255,255,255,0.1); 
+            border: 1px solid var(--border-color); 
             border-radius: 12px; 
-            color: #fff; 
+            color: var(--text-main); 
             font-family: inherit; 
             font-size: 14px;
-            transition: 0.3s;
+            transition: 0.4s ease;
         }
-        input[type="text"]:focus { outline: none; border-color: var(--accent); }
-        button { 
+        input[type="text"]:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2); }
+        button.btn-send { 
             padding: 16px 28px; 
             background: var(--accent); 
-            color: var(--bg-dark); 
+            color: var(--btn-text); 
             border: none; 
             border-radius: 12px; 
             font-weight: 700; 
@@ -72,70 +122,123 @@ if (!file_exists('config.php')) {
             transition: 0.2s;
             font-family: inherit;
         }
-        button:hover { background: #0284c7; color: #fff;}
-        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        button.btn-send:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
+        button.btn-send:disabled { opacity: 0.5; cursor: not-allowed; }
     </style>
 </head>
 <body>
     <div class="header">
         <h2>AI Assistant</h2>
+        <button id="themeToggle" class="btn-theme" onclick="toggleTheme()">☀️ Light Mode</button>
     </div>
+
     <div class="chat-container" id="chatBox">
         <div class="message ai">Halo! Aplikasi telah berhasil diinstal. Ada yang bisa saya bantu hari ini?</div>
     </div>
+
     <div class="input-area">
         <input type="text" id="pesanInput" placeholder="Ketik pesan Anda di sini..." autocomplete="off">
-        <button id="sendBtn" onclick="kirimPesan()">Kirim</button>
+        <button id="sendBtn" class="btn-send" onclick="kirimPesan()">Kirim</button>
     </div>
+
     <script>
+        const themeToggle = document.getElementById('themeToggle');
+        let isLightMode = localStorage.getItem('ai_theme') === 'light';
+
+        function applyTheme() {
+            if (isLightMode) {
+                document.body.classList.add('light-mode');
+                themeToggle.innerHTML = '🌙 Dark Mode';
+            } else {
+                document.body.classList.remove('light-mode');
+                themeToggle.innerHTML = '☀️ Light Mode';
+            }
+        }
+
+        function toggleTheme() {
+            isLightMode = !isLightMode;
+            localStorage.setItem('ai_theme', isLightMode ? 'light' : 'dark');
+            applyTheme();
+        }
+        
+        applyTheme();
+
         const chatBox = document.getElementById('chatBox');
         const inputField = document.getElementById('pesanInput');
         const sendBtn = document.getElementById('sendBtn');
+
         inputField.addEventListener("keypress", function(event) {
-            if (event.key === "Enter") {
+            if (event.key === "Enter" && !sendBtn.disabled) {
                 event.preventDefault();
                 kirimPesan();
             }
         });
+
+        function toggleInputs(status) {
+            inputField.disabled = !status;
+            sendBtn.disabled = !status;
+            if (status) inputField.focus();
+        }
+
         async function kirimPesan() {
             const pesan = inputField.value.trim();
             if (!pesan) return;
+
             appendMessage('user', pesan);
             inputField.value = '';
-            inputField.disabled = true;
-            sendBtn.disabled = true;
+            toggleInputs(false);
+
             const loadingId = 'loading-' + Date.now();
             appendMessage('ai', 'Sedang berpikir...', loadingId);
             chatBox.scrollTop = chatBox.scrollHeight;
+
             try {
                 const formData = new FormData();
                 formData.append('pesan', pesan);
+
                 const response = await fetch('process.php', {
                     method: 'POST',
                     body: formData
                 });
+                
                 const result = await response.json();
                 const elLoading = document.getElementById(loadingId);
+                
                 if (result.status === true && result.data && result.data.pesan) {
-                    elLoading.innerText = result.data.pesan;
+                    let cleanText = result.data.pesan.replace(/[*#`_]/g, '');
+                    
+                    elLoading.textContent = '';
+                    
+                    let i = 0;
+                    function typeWriter() {
+                        if (i < cleanText.length) {
+                            elLoading.textContent += cleanText.charAt(i);
+                            i++;
+                            chatBox.scrollTop = chatBox.scrollHeight;
+                            setTimeout(typeWriter, 15);
+                        } else {
+                            toggleInputs(true);
+                        }
+                    }
+                    typeWriter();
+                    
                 } else {
-                    elLoading.innerText = result.data?.pesan || 'Terjadi kesalahan pada sistem pusat.';
+                    elLoading.textContent = result.data?.pesan || 'Terjadi kesalahan pada sistem pusat.';
                     elLoading.style.color = '#ef4444';
+                    toggleInputs(true);
                 }
             } catch (error) {
                 const elLoading = document.getElementById(loadingId);
-                elLoading.innerText = 'Gagal terhubung ke backend server lokal.';
+                elLoading.textContent = 'Gagal terhubung ke backend server lokal.';
                 elLoading.style.color = '#ef4444';
+                toggleInputs(true);
             }
-            inputField.disabled = false;
-            sendBtn.disabled = false;
-            inputField.focus();
-            chatBox.scrollTop = chatBox.scrollHeight;
         }
+
         function appendMessage(sender, text, id = null) {
             const div = document.createElement('div');
             div.className = 'message ' + sender;
-            div.innerText = text;
+            div.textContent = text;
             if (id) div.id = id;
             chatBox.appendChild(div);
         }
