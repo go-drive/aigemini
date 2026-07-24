@@ -4,15 +4,32 @@ if (file_exists('config.php')) {
     exit;
 }
 $pesan = '';
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $api_key = trim($_POST['api_key']);
-    $ai_token = trim($_POST['ai_token']);
+    
+    $emails = $_POST['email'] ?? [];
+    $tokens = $_POST['token'] ?? [];
+    $ai_token_arr = [];
+
+    for ($i = 0; $i < count($tokens); $i++) {
+        $e = trim($emails[$i] ?? '');
+        $t = trim($tokens[$i] ?? '');
+        
+        if (!empty($e) && !empty($t)) {
+            $ai_token_arr[] = $e . '-->' . $t;
+        }
+    }
+    
+    $ai_token = implode(',', $ai_token_arr);
+
     if (!empty($api_key) && !empty($ai_token)) {
         $config_content = "<?php\n";
         $config_content .= "define('API_KEY_SYSTEM', '" . addslashes($api_key) . "');\n";
         $config_content .= "define('AI_TOKENS', '" . addslashes($ai_token) . "');\n";
         $config_content .= "define('API_GATEWAY_URL', 'https://village.elyng.com/api/ai.php');\n";
         $config_content .= "?>";
+        
         if (file_put_contents('config.php', $config_content)) {
             header("Location: index.php");
             exit;
@@ -98,10 +115,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             border-radius: 16px; 
             border: 1px solid var(--border-color); 
             width: 100%; 
-            max-width: 400px; 
+            max-width: 450px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.15); 
             backdrop-filter: blur(10px);
             transition: background-color 0.4s ease, border-color 0.4s ease;
+            max-height: 90vh;
+            overflow-y: auto;
         }
         h2 { margin-top: 0; color: var(--accent); text-align: center; margin-bottom: 25px; transition: color 0.4s ease; }
         .form-group { margin-bottom: 20px; }
@@ -120,6 +139,34 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
         input[type="text"]:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2); }
         
+        .token-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+        .token-row input {
+            flex: 1;
+        }
+        .btn-icon {
+            width: 42px;
+            height: 42px;
+            flex-shrink: 0;
+            border: none;
+            border-radius: 8px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+        }
+        .btn-icon.add { background: #10b981; color: #fff; }
+        .btn-icon.add:hover { background: #059669; }
+        .btn-icon.remove { background: #ef4444; color: #fff; }
+        .btn-icon.remove:hover { background: #dc2626; }
+
         .btn { 
             width: 100%; 
             padding: 14px; 
@@ -132,6 +179,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             cursor: pointer; 
             transition: all 0.3s ease; 
             font-family: inherit;
+            margin-top: 10px;
         }
         .btn:hover { opacity: 0.9; transform: translateY(-1px); }
         
@@ -146,6 +194,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             text-align: center; 
         }
         .note { font-size: 11px; color: var(--text-muted); margin-top: 6px; display: block; transition: color 0.4s ease; }
+        
+        .note a {
+            color: inherit;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .note a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -162,13 +220,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="form-group">
                 <label>API Key Sistem</label>
                 <input type="text" name="api_key" placeholder="Contoh: USER_API_KEY_123" required autocomplete="off">
-                <span class="note">Dapatkan API Key di dasbor Village Payment: <strong>Profil</strong> &rarr; <strong>Pengaturan API</strong>.</span>
+                <span class="note">Dapatkan API Key di <a href="https://village.elyng.com/page/profile" target="_blank">dasbor Village Payment</a>: <strong>Profil</strong> &rarr; <strong>Pengaturan API</strong>.</span>
             </div>
-            <div class="form-group">
-                <label>Token AI (Mandiri)</label>
-                <input type="text" name="ai_token" placeholder="sk-xxxx atau timA@email.com-->sk-xxxx" required autocomplete="off">
-                <span class="note">Pisahkan dengan koma (,) jika memiliki lebih dari satu token.</span>
+            
+            <div class="form-group" id="token-wrapper">
+                <label>Token AI Studio</label>
+                <div class="token-row">
+                    <input type="text" name="email[]" placeholder="timA@email.com" required autocomplete="off">
+                    <input type="text" name="token[]" placeholder="Token sk-xxxx" required autocomplete="off">
+                    <button type="button" class="btn-icon add" onclick="addTokenRow()">+</button>
+                </div>
             </div>
+            
             <button type="submit" class="btn">Simpan & Mulai</button>
         </form>
     </div>
@@ -194,6 +257,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
         
         applyTheme();
+
+        function addTokenRow() {
+            const wrapper = document.getElementById('token-wrapper');
+            const newRow = document.createElement('div');
+            newRow.className = 'token-row';
+            newRow.innerHTML = `
+                <input type="text" name="email[]" placeholder="timB@email.com" required autocomplete="off">
+                <input type="text" name="token[]" placeholder="Token sk-xxxx" required autocomplete="off">
+                <button type="button" class="btn-icon remove" onclick="this.parentElement.remove()">-</button>
+            `;
+            wrapper.appendChild(newRow);
+        }
     </script>
 </body>
 </html>
