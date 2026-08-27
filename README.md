@@ -6,7 +6,7 @@ Antarmuka obrolan (Chat UI) modern, ringan, dan responsif untuk terhubung dengan
 * **Desain Modern:** Antarmuka bergaya *Dark Mode* yang bersih dan profesional.
 * **Auto-Setup Wizard:** Instalasi mudah melalui antarmuka web, tanpa perlu mengedit kode konfigurasi secara manual.
 * **Keamanan Privasi:** API Key dan Token AI Anda disimpan secara lokal di server Anda sendiri (`config.php`).
-* **Dukungan Multi-Token:** Mendukung penggunaan banyak token AI sekaligus sebagai cadangan (*failover*).
+* **Dukungan Multi-Token:** Mendukung penggunaan banyak token AI sekaligus.
 
 ---
 
@@ -14,7 +14,7 @@ Antarmuka obrolan (Chat UI) modern, ringan, dan responsif untuk terhubung dengan
 Sebelum menginstal aplikasi ini, pastikan Anda telah menyiapkan hal-hal berikut:
 1. **Web Server dengan PHP:** Mendukung PHP 7.4 atau yang lebih baru (XAMPP, Laragon, atau Hosting Panel).
 2. **API Key Sistem:** Dapatkan kunci akses Anda di dasbor Village Payment: **Profil** &rarr; **Pengaturan API**.
-3. **Token AI Mandiri:** Kunci API / Token rahasia dari penyedia AI Anda (misalnya Gemini atau OpenAI).
+3. **Token AI:** Kunci API / Token rahasia dari penyedia AI Aistudio.
 
 ---
 
@@ -44,8 +44,8 @@ Saat Anda membuka aplikasi ini untuk pertama kalinya, Anda akan otomatis diarahk
 
 Isi formulir instalasi dengan teliti:
 * **API Key Sistem:** Masukkan API Key yang Anda salin dari Village Payment.
-* **Token AI (Mandiri):** Masukkan token AI Anda. 
-  * *Tips:* Jika Anda memiliki lebih dari satu token, pisahkan dengan koma. (Contoh: `sk-TokenSatu, sk-TokenDua`).
+* **Token AI:** Masukkan token AI Anda. 
+  * *Tips:* Jika Anda memiliki lebih dari satu token, silahkan klik +.
 
 Setelah Anda menekan tombol **Simpan & Mulai**, aplikasi akan otomatis membuat file `config.php` dan Anda siap menggunakan AI Assistant!
 
