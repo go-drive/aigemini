@@ -72,6 +72,19 @@ if (!file_exists('config.php')) {
         .message.user { background: var(--accent); color: var(--btn-text); align-self: flex-end; border-bottom-right-radius: 4px; font-weight: 500; }
         .message.ai { background: var(--ai-msg-bg); align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid var(--border-color); }
         
+        .message.ai p { margin: 0 0 10px 0; }
+        .message.ai p:last-child { margin-bottom: 0; }
+        .message.ai pre {
+            background: rgba(0, 0, 0, 0.4); padding: 12px; border-radius: 8px;
+            overflow-x: auto; margin: 10px 0; border: 1px solid var(--border-color);
+        }
+        .message.ai code {
+            font-family: 'Courier New', Courier, monospace; background: rgba(255, 255, 255, 0.1);
+            padding: 2px 6px; border-radius: 4px; font-size: 13px;
+        }
+        .message.ai pre code { background: transparent; padding: 0; border: none; color: #f8fafc; }
+        .message.ai ul, .message.ai ol { margin: 5px 0; padding-left: 20px; }
+
         .input-wrapper { display: flex; flex-direction: column; gap: 8px; }
         .file-preview { font-size: 12px; color: var(--accent); display: none; align-items: center; gap: 8px; padding-left: 5px; }
         .file-preview span { background: var(--ai-msg-bg); padding: 4px 10px; border-radius: 12px; border: 1px solid var(--border-color); }
@@ -225,22 +238,26 @@ if (!file_exists('config.php')) {
                 const elLoading = document.getElementById(loadingId);
                 
                 if (result.status === true && result.data && result.data.pesan) {
-                    let cleanText = result.data.pesan.replace(/[*#`_]/g, '');
-                    elLoading.textContent = '';
+                    let rawText = result.data.pesan;
                     
-                    let i = 0;
-                    function typeWriter() {
-                        if (i < cleanText.length) {
-                            elLoading.textContent += cleanText.charAt(i);
-                            i++;
-                            chatBox.scrollTop = chatBox.scrollHeight;
-                            setTimeout(typeWriter, 15);
-                        } else {
-                            toggleInputs(true);
-                        }
+                    function parseMarkdown(text) {
+                        let html = text
+                            .replace(/&/g, "&amp;")
+                            .replace(/</g, "&lt;")
+                            .replace(/>/g, "&gt;");
+
+                        html = html.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+                        html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+                        html = html.replace(/\*\*([^\*]+)\*\*/g, '<strong>$1</strong>');
+                        html = html.replace(/\*([^\*]+)\*/g, '<em>$1</em>');
+                        html = html.replace(/\n/g, '<br>');
+
+                        return html;
                     }
-                    typeWriter();
-                    
+
+                    elLoading.innerHTML = parseMarkdown(rawText);
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                    toggleInputs(true);
                 } else {
                     elLoading.textContent = result.data?.pesan || 'Terjadi kesalahan pada sistem.';
                     elLoading.style.color = '#ef4444';
