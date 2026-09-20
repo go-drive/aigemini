@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $config_content = "<?php\n";
         $config_content .= "define('API_KEY_SYSTEM', '" . addslashes($api_key) . "');\n";
         $config_content .= "define('AI_TOKENS', '" . addslashes($ai_token) . "');\n";
-        $config_content .= "define('API_GATEWAY_URL', 'https://village.elyng.com/api/ai.php');\n";
+        $config_content .= "define('API_GATEWAY_URL', 'https://village.elyng.com/api/ai');\n";
         $config_content .= "?>";
         
         if (file_put_contents('config.php', $config_content)) {
