@@ -77,6 +77,7 @@ if (!file_exists('config.php')) {
         .message.ai pre {
             background: rgba(0, 0, 0, 0.4); padding: 12px; border-radius: 8px;
             overflow-x: auto; margin: 10px 0; border: 1px solid var(--border-color);
+            position: relative;
         }
         .message.ai code {
             font-family: 'Courier New', Courier, monospace; background: rgba(255, 255, 255, 0.1);
@@ -84,6 +85,16 @@ if (!file_exists('config.php')) {
         }
         .message.ai pre code { background: transparent; padding: 0; border: none; color: #f8fafc; }
         .message.ai ul, .message.ai ol { margin: 5px 0; padding-left: 20px; }
+
+        .btn-copy {
+            position: absolute; top: 8px; right: 8px;
+            background: rgba(255,255,255,0.1); color: #cbd5e1;
+            border: 1px solid rgba(255,255,255,0.15); border-radius: 6px;
+            padding: 4px 10px; font-size: 12px; cursor: pointer;
+            font-family: inherit; transition: 0.2s;
+        }
+        .btn-copy:hover { background: rgba(255,255,255,0.2); color: #f8fafc; }
+        .btn-copy.copied { background: #22c55e; color: #fff; border-color: #22c55e; }
 
         .input-wrapper { display: flex; flex-direction: column; gap: 8px; }
         .file-preview { font-size: 12px; color: var(--accent); display: none; align-items: center; gap: 8px; padding-left: 5px; }
@@ -246,7 +257,10 @@ if (!file_exists('config.php')) {
                             .replace(/</g, "&lt;")
                             .replace(/>/g, "&gt;");
 
-                        html = html.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+                        html = html.replace(/```([\s\S]*?)```/g, function(match, code) {
+                            let cleanCode = code.replace(/^\n/, '');
+                            return '<pre><button class="btn-copy" onclick="copyCode(this)">📋 Copy</button><code>' + cleanCode + '</code></pre>';
+                        });
                         html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
                         html = html.replace(/\*\*([^\*]+)\*\*/g, '<strong>$1</strong>');
                         html = html.replace(/\*([^\*]+)\*/g, '<em>$1</em>');
@@ -277,6 +291,19 @@ if (!file_exists('config.php')) {
             div.textContent = text;
             if (id) div.id = id;
             chatBox.appendChild(div);
+        }
+
+        function copyCode(btn) {
+            const codeBlock = btn.nextElementSibling;
+            const text = codeBlock.textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                btn.textContent = '✅ Tersalin!';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = '📋 Copy';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
         }
     </script>
 </body>
